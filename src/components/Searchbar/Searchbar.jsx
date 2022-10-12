@@ -1,41 +1,41 @@
-import { Component } from 'react';
+import {
+  Wrapper,
+  SearchForm,
+  SearchFormBtn,
+  SearchFormInput,
+} from './Searchbar.styled';
+import { MdSearch } from 'react-icons/md';
+import { Formik } from 'formik';
 
-export default class Searchbar extends Component {
-  state = {
-    text: '',
+const initialValues = {
+  query: '',
+};
+
+const Searchbar = ({ onSearch }) => {
+  const handleSubmit = (values, actions) => {
+    console.log(values);
+    onSearch(values.query);
   };
 
-  handleInput = e => this.setState({ text: e.currentTarget.value });
+  return (
+    <Wrapper>
+      <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+        <SearchForm>
+          <SearchFormBtn type="submit">
+            <MdSearch size={28} />
+          </SearchFormBtn>
 
-  handleSubmit = e => {
-    e.preventDefault();
-
-    this.props.onSubmit(this.state.text);
-    this.setState({ text: '' });
-  };
-
-  render() {
-    const { text } = this.state;
-    const { onSubmit } = this.props;
-
-    return (
-      <header className="searchbar">
-        <form className="form" onSubmit={this.handleSubmit}>
-          <button type="submit" className="button">
-            <span className="button-label">Search</span>
-          </button>
-
-          <input
-            className="input"
+          <SearchFormInput
+            name="query"
             type="text"
             autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
-            onChange={this.handleInput}
-            value={text}
           />
-        </form>
-      </header>
-    );
-  }
-}
+        </SearchForm>
+      </Formik>
+    </Wrapper>
+  );
+};
+
+export default Searchbar;

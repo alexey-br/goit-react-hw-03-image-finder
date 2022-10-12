@@ -1,6 +1,8 @@
 import { Component } from 'react';
 import PixabayAPI from 'utils/PixabayAPI';
-import Searchbar from './Searchbar';
+import Searchbar from './Searchbar/Searchbar';
+import { ImageGallery } from './ImageGallery/ImageGallery';
+import Button from './Button/Button';
 
 // const Status = {
 //   IDLE: 'idle',
@@ -18,15 +20,22 @@ export default class App extends Component {
 
   handleSearch = text => {
     // pixabayApi.query = text;
-    const data = pixabayApi.fetchImages();
-    console.log(data);
+    // const data = pixabayApi.fetchImages();
+    console.log(text);
   };
 
   render() {
     return (
-      <div>
-        <Searchbar onSubmit={this.handleSearch} />
-      </div>
+      <>
+        <Searchbar onSearch={this.handleSearch} />
+        <main>
+          <ImageGallery>
+            <li>hello</li>
+            <li>world</li>
+          </ImageGallery>
+          <Button>Load more</Button>
+        </main>
+      </>
     );
   }
 }
