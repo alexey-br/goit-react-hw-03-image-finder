@@ -1,8 +1,9 @@
 import { Component } from 'react';
-import PixabayAPI from 'utils/PixabayAPI';
+// import PixabayAPI from 'utils/PixabayAPI';
 import Searchbar from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
+import Modal from './Modal/Modal';
 
 // const Status = {
 //   IDLE: 'idle',
@@ -11,11 +12,16 @@ import Button from './Button/Button';
 //   REJECTED: 'rejected',
 // };
 
-const pixabayApi = new PixabayAPI();
+// const pixabayApi = new PixabayAPI();
 
 export default class App extends Component {
   state = {
     images: [],
+    showModal: false,
+  };
+
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({ showModal: !showModal }));
   };
 
   handleSearch = text => {
@@ -34,6 +40,18 @@ export default class App extends Component {
             <li>world</li>
           </ImageGallery>
           <Button>Load more</Button>
+          {this.state.showModal && (
+            <Modal onClose={this.toggleModal}>
+              <h2>Modal</h2>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                Tenetur a asperiores temporibus nesciunt molestiae magni
+                dignissimos, consectetur expedita nisi, laudantium, fugit velit.
+                Velit libero reiciendis sunt quibusdam repellat excepturi
+                accusantium!
+              </p>
+            </Modal>
+          )}
         </main>
       </>
     );

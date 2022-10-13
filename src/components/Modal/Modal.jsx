@@ -1,13 +1,14 @@
+import { Component } from 'react';
 import { ModalWrapper, Overlay } from './Modal.styled';
 
-const Modal = () => {
-  return (
-    <Overlay>
-      <ModalWrapper>
-        <img src="" alt="" />
-      </ModalWrapper>
-    </Overlay>
-  );
-};
+export default class Modal extends Component {
+  render() {
+    return (
+      <Overlay>
+        <ModalWrapper>{this.props.children}</ModalWrapper>
+      </Overlay>
+    );
+  }
+}
 
-export default Modal;
+// export default Modal;
