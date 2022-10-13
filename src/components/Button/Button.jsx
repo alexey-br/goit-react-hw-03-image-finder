@@ -1,7 +1,7 @@
 const { LoadMoreBtn } = require('./Button.styled');
 
-const Button = () => {
-  return <LoadMoreBtn>Load more</LoadMoreBtn>;
+const Button = ({ onClick }) => {
+  return <LoadMoreBtn onClick={() => onClick()}>Load more</LoadMoreBtn>;
 };
 
 export default Button;

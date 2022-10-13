@@ -13,7 +13,6 @@ const initialValues = {
 
 const Searchbar = ({ onSearch }) => {
   const handleSubmit = (values, actions) => {
-    console.log(values);
     onSearch(values.query);
   };
 

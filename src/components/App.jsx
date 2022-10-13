@@ -27,7 +27,6 @@ export default class App extends Component {
   handleSearch = text => {
     // pixabayApi.query = text;
     // const data = pixabayApi.fetchImages();
-    console.log(text);
   };
 
   render() {
@@ -39,9 +38,9 @@ export default class App extends Component {
             <li>hello</li>
             <li>world</li>
           </ImageGallery>
-          <Button>Load more</Button>
+          <Button onClick={this.toggleModal}>Load more</Button>
           {this.state.showModal && (
-            <Modal onClose={this.toggleModal}>
+            <Modal closeModal={this.toggleModal}>
               <h2>Modal</h2>
               <p>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit.
