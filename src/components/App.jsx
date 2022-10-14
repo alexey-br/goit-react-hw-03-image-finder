@@ -1,9 +1,9 @@
 import { Component } from 'react';
-// import PixabayAPI from 'utils/PixabayAPI';
 import Searchbar from './Searchbar/Searchbar';
-import { ImageGallery } from './ImageGallery/ImageGallery';
+import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
-import Modal from './Modal/Modal';
+
+import * as API from '../services/PixabayAPI';
 
 // const Status = {
 //   IDLE: 'idle',
@@ -12,21 +12,43 @@ import Modal from './Modal/Modal';
 //   REJECTED: 'rejected',
 // };
 
-// const pixabayApi = new PixabayAPI();
-
 export default class App extends Component {
   state = {
-    images: [],
-    showModal: false,
+    page: 1,
+    imageQuery: '',
+    imagesData: [],
   };
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({ showModal: !showModal }));
+  componentDidMount() {
+    const { imageQuery, page } = this.state;
+
+    this.getImages(imageQuery, page);
+  }
+
+  componentDidUpdate(_, prevState) {
+    const { page: prevPage, imageQuery: prevImageQuery } = prevState;
+    const { page: newPage, imageQuery: newImageQuery } = this.state;
+
+    if (prevPage === newPage && prevImageQuery === newImageQuery) return;
+
+    this.getImages(newImageQuery, newPage);
+  }
+
+  getImages = async (imageQuery, page) => {
+    try {
+      const data = await API.fetchImages(imageQuery, page);
+      this.setState({ imagesData: data.hits });
+    } catch (error) {
+      console.log('error catched - ', error);
+    }
   };
 
   handleSearch = text => {
-    // pixabayApi.query = text;
-    // const data = pixabayApi.fetchImages();
+    this.setState({ imageQuery: text, page: 1, imagesData: [] });
+  };
+
+  handleNextPage = () => {
+    this.setState(state => ({ page: state.page + 1 }));
   };
 
   render() {
@@ -34,23 +56,8 @@ export default class App extends Component {
       <>
         <Searchbar onSearch={this.handleSearch} />
         <main>
-          <ImageGallery>
-            <li>hello</li>
-            <li>world</li>
-          </ImageGallery>
-          <Button onClick={this.toggleModal}>Load more</Button>
-          {this.state.showModal && (
-            <Modal closeModal={this.toggleModal}>
-              <h2>Modal</h2>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Tenetur a asperiores temporibus nesciunt molestiae magni
-                dignissimos, consectetur expedita nisi, laudantium, fugit velit.
-                Velit libero reiciendis sunt quibusdam repellat excepturi
-                accusantium!
-              </p>
-            </Modal>
-          )}
+          <ImageGallery imagesData={this.state.imagesData} />
+          <Button onClick={this.handleNextPage}>Load more</Button>
         </main>
       </>
     );

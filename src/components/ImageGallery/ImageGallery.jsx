@@ -1,14 +1,22 @@
-import styled from 'styled-components';
+import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
+import { ImagesList } from './ImageGallery.styled';
 
-export const ImageGallery = styled.ul`
-  display: grid;
-  max-width: calc(100vw - 48px);
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  grid-gap: 16px;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding: 0;
-  list-style: none;
-  margin-left: auto;
-  margin-right: auto;
-`;
+const ImageGallery = ({ imagesData }) => {
+  return (
+    <ImagesList>
+      {imagesData.map(({ id, webformatURL, largeImageURL, tags }) => {
+        return (
+          <li key={id}>
+            <ImageGalleryItem
+              previewURL={webformatURL}
+              imageURL={largeImageURL}
+              tags={tags}
+            />
+          </li>
+        );
+      })}
+    </ImagesList>
+  );
+};
+
+export default ImageGallery;
