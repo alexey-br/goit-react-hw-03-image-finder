@@ -1,10 +1,7 @@
 import { Component } from 'react';
 import { GalleryImage, GalleryItem } from './ImageGalleryItem.styled';
 import Modal from '../Modal/Modal';
-
-// const ImageGalleryItem = ({ previewURL, imageURL, tags }) => {
-
-// };
+import { ModalImage } from '../ModalImage/ModalImage';
 
 export default class ImageGalleryItem extends Component {
   state = { showModal: false };
@@ -22,11 +19,7 @@ export default class ImageGalleryItem extends Component {
         </GalleryItem>
         {this.state.showModal && (
           <Modal closeModal={this.toggleModal}>
-            <img
-              src={imageURL}
-              alt={tags}
-              style={{ position: 'reletive', maxHeight: 'inherit' }}
-            />
+            <ModalImage src={imageURL} alt={tags} />
           </Modal>
         )}
       </>

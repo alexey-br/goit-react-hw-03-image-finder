@@ -12,7 +12,7 @@ const initialValues = {
 };
 
 const Searchbar = ({ onSearch }) => {
-  const handleSubmit = (values, actions) => {
+  const handleSubmit = (values, _) => {
     onSearch(values.query.trim());
   };
 
