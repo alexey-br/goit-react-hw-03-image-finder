@@ -7,10 +7,15 @@ const Loader = () => {
       height="80"
       width="80"
       ariaLabel="MagnifyingGlass-loading"
-      wrapperStyle={{}}
+      wrapperStyle={{
+        display: 'block',
+        margin: '0 auto',
+      }}
       wrapperClass="MagnifyingGlass-wrapper"
       glassColor="#c0efff"
       color="#e15b64"
+      position="fixed"
+      left="50%"
     />
   );
 };

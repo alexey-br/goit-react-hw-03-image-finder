@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import {
   Wrapper,
   SearchForm,
@@ -38,3 +39,7 @@ const Searchbar = ({ onSearch }) => {
 };
 
 export default Searchbar;
+
+Searchbar.propTypes = {
+  onSearch: PropTypes.func.isRequired,
+};

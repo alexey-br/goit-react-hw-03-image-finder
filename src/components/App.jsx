@@ -3,8 +3,9 @@ import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
 import Loader from './Loader/Loader';
-
-import * as API from '../services/PixabayAPI';
+import scrollToNewImages from 'services/scroll-to-new-images';
+import fetchImages from 'services/PixabayAPI';
+import NoImageAlert from './NoImageAlert/NoImageAlert';
 
 const Status = {
   IDLE: 'idle',
@@ -19,6 +20,7 @@ export default class App extends Component {
     imageQuery: '',
     imagesData: [],
     imagesNumber: null,
+    pageHight: null,
     status: Status.IDLE,
   };
 
@@ -30,50 +32,74 @@ export default class App extends Component {
   }
 
   componentDidUpdate(_, prevState) {
-    const { page: prevPage, imageQuery: prevImageQuery } = prevState;
-    const { page: newPage, imageQuery: newImageQuery } = this.state;
+    const {
+      page: prevPage,
+      imageQuery: prevImageQuery,
+      pageHight: prevPageHight,
+    } = prevState;
+    const {
+      page: newPage,
+      imageQuery: newImageQuery,
+      pageHight: newPageHight,
+    } = this.state;
 
     if (prevPage === newPage && prevImageQuery === newImageQuery) return;
-    console.log('update');
 
     this.setState({ status: Status.PENDING });
     this.getImages(newImageQuery, newPage);
+
+    if (newPageHight !== prevPageHight) {
+      setTimeout(() => scrollToNewImages(this.state.pageHight), 500);
+    }
   }
 
   getImages = async (imageQuery, page) => {
     try {
-      const { hits, totalHits } = await API.fetchImages(imageQuery, page);
-      this.setState(prevState => ({
-        imagesData: [...prevState.imagesData, ...hits],
+      const { hits, totalHits } = await fetchImages(imageQuery, page);
+      if (totalHits === 0) {
+        this.setState({ status: Status.REJECTED });
+        return;
+      }
+      this.setState(({ imagesData }) => ({
+        imagesData: [...imagesData, ...hits],
         imagesNumber: totalHits,
         status: Status.RESOLVED,
       }));
     } catch (error) {
-      console.log('error catched - ', error);
+      console.log('error catched: ', error);
       this.setState({ status: Status.REJECTED });
     }
   };
 
   handleSearch = text => {
-    this.setState({
-      imageQuery: text,
-      page: 1,
+    this.setState(({ imageQuery }) => {
+      if (imageQuery !== text) {
+        return {
+          imageQuery: text,
+          imagesData: [],
+          page: 1,
+        };
+      }
     });
   };
 
   handleNextPage = () => {
-    this.setState(state => ({
-      page: state.page + 1,
+    this.setState(({ page }) => ({
+      page: page + 1,
+      pageHight: document.body.scrollHeight,
     }));
   };
 
   areThereMorePages = () => {
-    const imagesToShow = this.state.imagesNumber - this.state.page * 12;
+    const { imagesNumber, page } = this.state;
+
+    const imagesToShow = imagesNumber - page * 12;
     return imagesToShow > 0;
   };
 
   render() {
     const { imagesData, status } = this.state;
+
     return (
       <>
         <Searchbar onSearch={this.handleSearch} />
@@ -83,6 +109,7 @@ export default class App extends Component {
             <Button onClick={this.handleNextPage}>Load more</Button>
           )}
           {status === Status.PENDING && <Loader />}
+          {status === Status.REJECTED && <NoImageAlert />}
         </main>
       </>
     );
