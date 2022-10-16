@@ -6,6 +6,7 @@ import Loader from './Loader/Loader';
 import scrollToNewImages from 'services/scroll-to-new-images';
 import fetchImages from 'services/PixabayAPI';
 import NoImageAlert from './NoImageAlert/NoImageAlert';
+import { IMAGES_PER_PAGE } from 'services/PixabayAPI';
 
 const Status = {
   IDLE: 'idle',
@@ -90,11 +91,11 @@ export default class App extends Component {
     }));
   };
 
-  areThereMorePages = () => {
+  checkForNextPage = () => {
     const { imagesNumber, page } = this.state;
 
-    const imagesToShow = imagesNumber - page * 12;
-    return imagesToShow > 0;
+    const maxShownImages = page * IMAGES_PER_PAGE;
+    return imagesNumber > maxShownImages;
   };
 
   render() {
@@ -105,7 +106,7 @@ export default class App extends Component {
         <Searchbar onSearch={this.handleSearch} />
         <main>
           <ImageGallery imagesData={imagesData} />
-          {status === Status.RESOLVED && this.areThereMorePages() && (
+          {status === Status.RESOLVED && this.checkForNextPage() && (
             <Button onClick={this.handleNextPage}>Load more</Button>
           )}
           {status === Status.PENDING && <Loader />}
