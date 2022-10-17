@@ -4,33 +4,32 @@ import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
 import Loader from './Loader/Loader';
 import scrollToNewImages from 'services/scroll-to-new-images';
-import fetchImages from 'services/PixabayAPI';
+import {
+  fetchImages,
+  normalizeData,
+  IMAGES_PER_PAGE,
+} from 'services/PixabayAPI';
 import NoImageAlert from './NoImageAlert/NoImageAlert';
-import { IMAGES_PER_PAGE } from 'services/PixabayAPI';
+import UseSearchMessage from './UseSearchMessage/UseSearchMessage';
 
 const Status = {
   IDLE: 'idle',
   PENDING: 'pending',
-  RESOLVED: 'resolced',
+  RESOLVED: 'resolved',
   REJECTED: 'rejected',
 };
 
+const initialState = {
+  page: 1,
+  imageQuery: '',
+  imagesData: [],
+  imagesNumber: null,
+  pageHight: null,
+  status: Status.IDLE,
+};
+
 export default class App extends Component {
-  state = {
-    page: 1,
-    imageQuery: '',
-    imagesData: [],
-    imagesNumber: null,
-    pageHight: null,
-    status: Status.IDLE,
-  };
-
-  componentDidMount() {
-    const { imageQuery, page } = this.state;
-
-    this.setState({ status: Status.PENDING });
-    this.getImages(imageQuery, page);
-  }
+  state = initialState;
 
   componentDidUpdate(_, prevState) {
     const {
@@ -44,7 +43,11 @@ export default class App extends Component {
       pageHight: newPageHight,
     } = this.state;
 
-    if (prevPage === newPage && prevImageQuery === newImageQuery) return;
+    if (
+      (prevPage === newPage && prevImageQuery === newImageQuery) ||
+      newImageQuery === ''
+    )
+      return;
 
     this.setState({ status: Status.PENDING });
     this.getImages(newImageQuery, newPage);
@@ -57,12 +60,15 @@ export default class App extends Component {
   getImages = async (imageQuery, page) => {
     try {
       const { hits, totalHits } = await fetchImages(imageQuery, page);
+
       if (totalHits === 0) {
         this.setState({ status: Status.REJECTED });
         return;
       }
+
+      const newImagesData = normalizeData(hits);
       this.setState(({ imagesData }) => ({
-        imagesData: [...imagesData, ...hits],
+        imagesData: [...imagesData, ...newImagesData],
         imagesNumber: totalHits,
         status: Status.RESOLVED,
       }));
@@ -73,6 +79,12 @@ export default class App extends Component {
   };
 
   handleSearch = text => {
+    if (text === '') {
+      this.setState(initialState);
+      console.log('initial');
+      return;
+    }
+
     this.setState(({ imageQuery }) => {
       if (imageQuery !== text) {
         return {
@@ -105,6 +117,7 @@ export default class App extends Component {
       <>
         <Searchbar onSearch={this.handleSearch} />
         <main>
+          {status === Status.IDLE && <UseSearchMessage />}
           <ImageGallery imagesData={imagesData} />
           {status === Status.RESOLVED && this.checkForNextPage() && (
             <Button onClick={this.handleNextPage}>Load more</Button>

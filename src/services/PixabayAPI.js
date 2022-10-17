@@ -5,7 +5,7 @@ const KEY = '29248812-56480c4f477581b48a8b2d913';
 
 axios.defaults.baseURL = 'https://pixabay.com';
 
-const fetchImages = async (query, page) => {
+export async function fetchImages(query, page) {
   const params = {
     q: query,
     page: page,
@@ -17,6 +17,13 @@ const fetchImages = async (query, page) => {
 
   const response = await axios.get('/api/', { params });
   return response.data;
-};
+}
 
-export default fetchImages;
+export function normalizeData(data) {
+  return data.map(({ id, webformatURL, largeImageURL, tags }) => ({
+    id,
+    webformatURL,
+    largeImageURL,
+    tags,
+  }));
+}
